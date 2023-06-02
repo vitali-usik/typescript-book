@@ -28,7 +28,7 @@ var foo: number = "not a number";
 
 ## Processing Overview
 
-The following is a quick review of how these key parts of the TypeScript compiler compose:
+Ниже приводится краткий обзор того, как составляются эти ключевые части компилятора TypeScript:
 
 ```code
 SourceCode ~~ scanner ~~> Token Stream
@@ -42,43 +42,43 @@ Token Stream ~~ parser ~~> AST
 AST ~~ binder ~~> Symbols
 ```
 
-`Symbol` is the primary building block of the TypeScript _semantic_ system. As shown the symbols are created as a result of binding. Symbols connect declaration nodes in the AST to other declarations contributing to the same entity.
+`Символ` это основной строительный блок _семантической_ системы TypeScript. Как показано символы создаются в результате связывания. Символы соединяют узлы объявлений в AST с другими объявлениями, относящимися к тому же объекту.
 
-Symbols + AST are what is used by the checker to _semantically_ validate the source code
+Символы + AST — это то, что используется программой проверки для _семантической_ проверки исходного кода.
 
 ```code
 AST + Symbols ~~ checker ~~> Type Validation
 ```
 
-Finally When a JS output is requested:
+Наконец, когда запрашивается вывод JS:
 
 ```code
 AST + Checker ~~ emitter ~~> JS
 ```
 
-There are a few additional files in the TypeScript compiler that provide utilities to many of these key portions which we cover next.
+В компиляторе TypeScript есть несколько дополнительных файлов, которые предоставляют утилиты для многих из этих ключевых частей, которые мы рассмотрим далее.
 
-## File: Utilities
+## Файл: Утилита
 
-`core.ts` : core utilities used by the TypeScript compiler. A few important ones:
+`core.ts` : основные утилиты используемые компилятором в TypeScript. Несколько важных:
 
-- `let objectAllocator: ObjectAllocator` : is a variable defined as a singleton global. It provides the definitions for `getNodeConstructor` (Nodes are covered when we look at `parser` / `AST`), `getSymbolConstructor` (Symbols are covered in `binder`), `getTypeConstructor` (Types are covered in `checker`), `getSignatureConstructor` (Signatures are the index, call and construct signatures).
+- `let objectAllocator: ObjectAllocator` : это переменная обьявленная как одноэлементная глобальная. Он предоставляет определения для `getNodeConstructor` (Узлы рассматриваются, когда мы смотрим на `parser` / `AST`), `getSymbolConstructor` (Символы обернуты в  `binder`), `getTypeConstructor` (Типы описаны в `checker`), `getSignatureConstructor` (Signatures — это индекс, вызов и построение signatures).
 
-## File: Key Data Structures
+## Файл: Ключевые структуры данных
 
-`types.ts` contains key data structures and interfaces uses throughout the compiler. Here is a sampling of a few key ones:
+`types.ts` содержит ключевые структуры данных и интерфейсы, используемые компилятором. Вот выборка из нескольких ключевых:
 
 - `SyntaxKind`
-  The AST node type is identified by the `SyntaxKind` enum.
+  Тип узла AST определяется перечислением `SyntaxKind`.
 - `TypeChecker`
-  This is the interface provided by the TypeChecker.
+  Это интерфейс, предоставляемый TypeChecker.
 - `CompilerHost`
-  This is used by the `Program` to interact with the `System`.
+  Это используется `Program` для взаимодействия с `System`.
 - `Node`
-  An AST node.
+  Узел AST.
 
-## File: System
+## Файл: Система
 
-`system.ts`. All interaction of the TypeScript compiler with the operating system goes through a `System` interface. Both the interface and its implementations (`WScript` and `Node`) are defined in `system.ts`. You can think of it as the _Operating Environment_ (OE).
+`system.ts`. Все взаимодействие компилятора TypeScript с операционной системой происходит через `System` интерфейс.И интерфейс, и его реализации (`WScript` и `Node`) определены`system.ts`. Вы можете думать об этом как об _Операционной Среде_ (OС).
 
-Now that you have an overview of the major files, we can look at the concept of `Program`
+Теперь, когда у вас есть обзор основных файлов, мы можем рассмотреть концепцию `Program`.
