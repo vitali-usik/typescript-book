@@ -61,7 +61,7 @@
   * [Index Signatures](docs/types/index-signatures.md)
   * [Перемещаемые типы](docs/types/moving-types.md)
   * [Обработка исключений](docs/types/exceptions.md)
-  * [Примиси](docs/types/mixins.md)
+  * [Примеси](docs/types/mixins.md)
 * [JSX](docs/jsx/tsx.md)
   * [React](docs/jsx/react.md)
   * [Non React JSX](docs/jsx/others.md)
