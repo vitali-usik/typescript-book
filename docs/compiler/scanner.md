@@ -1,23 +1,24 @@
 ## Scanner
-The source code for the TypeScript scanner is located entirely in `scanner.ts`. Scanner is *controlled* internally by the `Parser` to convert the source code to an AST. Here is what the desired outcome is.
+
+Исходный код сканера TypeScript полностью находится в файле scanner.ts. Сканер управляется парсером для преобразования исходного кода в AST (Абстрактное Синтаксическое Дерево). Вот как выглядит желаемый результат:
 
 ```
 SourceCode ~~ scanner ~~> Token Stream ~~ parser ~~> AST
 ```
 
-### Usage by Parser
-There is a *singleton* `scanner` created in `parser.ts` to avoid the cost of creating scanners over and over again. This scanner is then *primed* by the parser on demand using the `initializeState` function.
+### Использование парсером
+В файле `parser.ts` создается *одиночный* экземпляр сканера, чтобы избежать затрат на многократное создание новых сканеров. Этот сканер затем *инициализируется* парсером по мере необходимости с помощью функции `initializeState`.
 
-Here is a *simplied* version of the actual code in the parser that you can run demonstrating this concept:
+Вот *упрощенная* версия реального кода в парсере, которую вы можете запустить, чтобы продемонстрировать эту концепцию:
 
 `code/compiler/scanner/runScanner.ts`
 ```ts
 import * as ts from "ntypescript";
 
-// TypeScript has a singelton scanner
+// TypeScript имеет одиночный сканер
 const scanner = ts.createScanner(ts.ScriptTarget.Latest, /*skipTrivia*/ true);
 
-// That is initialized using a function `initializeState` similar to
+// Который инициализируется с помощью функции `initializeState`, аналогично:
 function initializeState(text: string) {
     scanner.setText(text);
     scanner.setOnError((message: ts.DiagnosticMessage, length: number) => {
@@ -27,20 +28,21 @@ function initializeState(text: string) {
     scanner.setLanguageVariant(ts.LanguageVariant.Standard);
 }
 
-// Sample usage
+// Пример использования
 initializeState(`
 var foo = 123;
 `.trim());
 
-// Start the scanning
+// Начать сканирование
 var token = scanner.scan();
 while (token != ts.SyntaxKind.EndOfFileToken) {
     console.log(ts.formatSyntaxKind(token));
     token = scanner.scan();
 }
+
 ```
 
-This will print out the following :
+Это выведет следующее:
 
 ```
 VarKeyword
@@ -50,17 +52,17 @@ FirstLiteralToken
 SemicolonToken
 ```
 
-### Scanner State
-After you call `scan` the scanner updates its local state (position in the scan, current token details etc). The scanner provides a bunch of utility functions to get the current scanner state. In the below sample we create a scanner and then use it to identify the tokens as well as their positions in the code.
+### Состояние сканера
+После вызова `scan` сканер обновляет свое локальное состояние (положение в сканировании, текущие детали токена и т.д.). Сканер предоставляет множество вспомогательных функций для получения текущего состояния сканера. В следующем примере мы создаем сканер и используем его для определения токенов, а также их позиций в коде.
 
 `code/compiler/scanner/runScannerWithPosition.ts`
 ```ts
-// Sample usage
+// Пример использования
 initializeState(`
 var foo = 123;
 `.trim());
 
-// Start the scanning
+// Начать сканирование
 var token = scanner.scan();
 while (token != ts.SyntaxKind.EndOfFileToken) {
     let currentToken = ts.formatSyntaxKind(token);
@@ -71,7 +73,7 @@ while (token != ts.SyntaxKind.EndOfFileToken) {
 }
 ```
 
-This will print out the following:
+Это выведет следующее:
 ```
 VarKeyword 0 3
 Identifier 3 7
@@ -80,5 +82,5 @@ FirstLiteralToken 9 13
 SemicolonToken 13 14
 ```
 
-### Standalone scanner
-Even though the TypeScript parser has a singleton scanner you can create a standalone scanner using `createScanner` and use its `setText`/`setTextPos` to scan at different points in a file for your amusement.
+### Одиночный сканер
+Несмотря на то, что TypeScript-парсер имеет одиночный сканер, вы можете создать независимый сканер с помощью `createScanner` и использовать его методы `setText`/`setTextPos`, чтобы сканировать различные части файла для вашего удобства.
